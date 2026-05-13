@@ -1,0 +1,140 @@
+<?php
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\node\Entity\Node;
+
+/**
+ * Implements hook_theme().
+ * Registers our custom Twig template for the patient card.
+ */
+function patient_lookup_theme($existing, $type, $theme, $path) {
+  return [
+    // Your existing AJAX card theme...
+    'patient_summary_card' => [
+      'variables' => [
+        'name' => NULL,
+        'gender' => NULL,
+        'dob' => NULL,
+        'blood' => NULL,
+        'phone' => NULL,
+      ],
+    ],
+    // The NEW block theme
+    'patient_demographics_block' => [
+      'variables' => [
+        'content' => [],
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for node_out_patient_department_form.
+ */
+function patient_lookup_form_node_out_patient_department_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  
+  // 1. Create an empty container wrapper right below the PID field.
+  // This is where our AJAX callback will inject the HTML card.
+  $form['patient_info_wrapper'] = [
+    '#type' => 'container',
+    '#attributes' => ['id' => 'patient-info-ajax-wrapper', 'class' => ['mb-4']],
+    // Place it immediately after the field_pid widget
+    '#weight' => isset($form['field_pid']['#weight']) ? $form['field_pid']['#weight'] + 0.1 : 1,
+  ];
+
+  // 2. Attach AJAX to the Entity Reference Autocomplete widget
+  if (isset($form['field_pid']['widget'][0]['target_id'])) {
+    $form['field_pid']['widget'][0]['target_id']['#ajax'] = [
+      'callback' => 'patient_lookup_ajax_callback',
+      'event' => 'autocompleteclose', // Triggers when the user selects a patient from the dropdown
+      'wrapper' => 'patient-info-ajax-wrapper',
+      'progress' => [
+        'type' => 'throbber',
+        'message' => t('Loading patient data...'),
+      ],
+    ];
+  }
+}
+
+function  patient_lookup_form_node_emergency_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  
+  // 1. Create an empty container wrapper right below the PID field.
+  // This is where our AJAX callback will inject the HTML card.
+  $form['patient_info_wrapper'] = [
+    '#type' => 'container',
+    '#attributes' => ['id' => 'patient-info-ajax-wrapper', 'class' => ['mb-4']],
+    // Place it immediately after the field_pid widget
+    '#weight' => isset($form['field_pid']['#weight']) ? $form['field_pid']['#weight'] + 0.1 : 1,
+  ];
+
+  // 2. Attach AJAX to the Entity Reference Autocomplete widget
+  if (isset($form['field_pid']['widget'][0]['target_id'])) {
+    $form['field_pid']['widget'][0]['target_id']['#ajax'] = [
+      'callback' => 'patient_lookup_ajax_callback',
+      'event' => 'autocompleteclose', // Triggers when the user selects a patient from the dropdown
+      'wrapper' => 'patient-info-ajax-wrapper',
+      'progress' => [
+        'type' => 'throbber',
+        'message' => t('Loading patient data...'),
+      ],
+    ];
+  }
+}
+
+function  patient_lookup_form_node_in_patient_department_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  
+  // 1. Create an empty container wrapper right below the PID field.
+  // This is where our AJAX callback will inject the HTML card.
+  $form['patient_info_wrapper'] = [
+    '#type' => 'container',
+    '#attributes' => ['id' => 'patient-info-ajax-wrapper', 'class' => ['mb-4']],
+    // Place it immediately after the field_pid widget
+    '#weight' => isset($form['field_pid']['#weight']) ? $form['field_pid']['#weight'] + 0.1 : 1,
+  ];
+
+  // 2. Attach AJAX to the Entity Reference Autocomplete widget
+  if (isset($form['field_pid']['widget'][0]['target_id'])) {
+    $form['field_pid']['widget'][0]['target_id']['#ajax'] = [
+      'callback' => 'patient_lookup_ajax_callback',
+      'event' => 'autocompleteclose', // Triggers when the user selects a patient from the dropdown
+      'wrapper' => 'patient-info-ajax-wrapper',
+      'progress' => [
+        'type' => 'throbber',
+        'message' => t('Loading patient data...'),
+      ],
+    ];
+  }
+}
+
+/**
+ * AJAX callback function to fetch patient details and return the rendered card.
+ */
+function patient_lookup_ajax_callback(array &$form, FormStateInterface $form_state) {
+  // Get the referenced Node ID from the field
+  $pid_value = $form_state->getValue(['field_pid', 0, 'target_id']);
+
+  if (!empty($pid_value)) {
+    // Load the patient node
+    $node = Node::load($pid_value);
+
+    // Verify it exists and is the correct content type
+    if ($node instanceof \Drupal\node\NodeInterface) {
+      
+      // Pass the actual database values into our Twig template
+      $form['patient_info_wrapper']['content'] = [
+        '#theme' => 'patient_summary_card',
+        '#name' => $node->get('field_first_name')->value . ' ' . $node->get('field_last_name')->value,
+        '#gender' => $node->get('field_gender')->value, 
+        '#dob' => $node->get('field_date_of_birth')->value,
+        '#phone' => $node->get('field_phone_number')->value,
+      ];
+    }
+  } else {
+    // If the field is cleared out, empty the wrapper
+    $form['patient_info_wrapper']['content'] = ['#markup' => ''];
+  }
+
+  // Return the rebuilt wrapper container
+  return $form['patient_info_wrapper'];
+}
+

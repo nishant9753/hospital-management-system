@@ -1,0 +1,177 @@
+<?php
+
+use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Extension\CoreExtension;
+use Twig\Extension\SandboxExtension;
+use Twig\Markup;
+use Twig\Sandbox\SecurityError;
+use Twig\Sandbox\SecurityNotAllowedTagError;
+use Twig\Sandbox\SecurityNotAllowedFilterError;
+use Twig\Sandbox\SecurityNotAllowedFunctionError;
+use Twig\Source;
+use Twig\Template;
+use Twig\TemplateWrapper;
+
+/* themes/contrib/bootstrap/templates/navigation/menu-local-tasks.html.twig */
+class __TwigTemplate_9e4789fd8c27c493d4914cc51d287869 extends Template
+{
+    private Source $source;
+    /**
+     * @var array<string, Template>
+     */
+    private array $macros = [];
+
+    public function __construct(Environment $env)
+    {
+        parent::__construct($env);
+
+        $this->source = $this->getSourceContext();
+
+        $this->parent = false;
+
+        $this->blocks = [
+        ];
+        $this->sandbox = $this->extensions[SandboxExtension::class];
+        $this->checkSecurity();
+    }
+
+    protected function doDisplay(array $context, array $blocks = []): iterable
+    {
+        $macros = $this->macros;
+        // line 16
+        yield $this->extensions['Drupal\Core\Template\TwigExtension']->escapeFilter($this->env, $this->extensions['Drupal\Core\Template\TwigExtension']->attachLibrary("bootstrap/tabs"), "html", null, true);
+        yield "
+";
+        // line 18
+        $context["classes"] = ["nav", (((($tmp =         // line 20
+($context["primary"] ?? null)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ("primary") : ("")), (((($tmp =         // line 21
+($context["secondary"] ?? null)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ("secondary") : ("")), (((($tmp =         // line 22
+($context["nav_style"] ?? null)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? (($context["nav_style"] ?? null)) : ("nav-tabs"))];
+        // line 25
+        yield "
+";
+        // line 26
+        if ((($tmp = ($context["primary"] ?? null)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) {
+            // line 27
+            yield "  <h2 class=\"visually-hidden\">";
+            yield $this->extensions['Drupal\Core\Template\TwigExtension']->renderVar(t("Primary tabs"));
+            yield "</h2>
+  <ul";
+            // line 28
+            yield $this->extensions['Drupal\Core\Template\TwigExtension']->escapeFilter($this->env, CoreExtension::getAttribute($this->env, $this->source, ($context["attributes"] ?? null), "addClass", [($context["classes"] ?? null)], "method", false, false, true, 28), "html", null, true);
+            yield ">";
+            yield $this->extensions['Drupal\Core\Template\TwigExtension']->escapeFilter($this->env, ($context["primary"] ?? null), "html", null, true);
+            yield "</ul>
+";
+        }
+        // line 30
+        if ((($tmp = ($context["secondary"] ?? null)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) {
+            // line 31
+            yield "  <h2 class=\"visually-hidden\">";
+            yield $this->extensions['Drupal\Core\Template\TwigExtension']->renderVar(t("Secondary tabs"));
+            yield "</h2>
+  <ul";
+            // line 32
+            yield $this->extensions['Drupal\Core\Template\TwigExtension']->escapeFilter($this->env, CoreExtension::getAttribute($this->env, $this->source, ($context["attributes"] ?? null), "addClass", [($context["classes"] ?? null)], "method", false, false, true, 32), "html", null, true);
+            yield ">";
+            yield $this->extensions['Drupal\Core\Template\TwigExtension']->escapeFilter($this->env, ($context["secondary"] ?? null), "html", null, true);
+            yield "</ul>
+";
+        }
+        $this->env->getExtension('\Drupal\Core\Template\TwigExtension')
+            ->checkDeprecations($context, ["primary", "secondary", "nav_style", "attributes"]);        yield from [];
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function getTemplateName(): string
+    {
+        return "themes/contrib/bootstrap/templates/navigation/menu-local-tasks.html.twig";
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function isTraitable(): bool
+    {
+        return false;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function getDebugInfo(): array
+    {
+        return array (  77 => 32,  72 => 31,  70 => 30,  63 => 28,  58 => 27,  56 => 26,  53 => 25,  51 => 22,  50 => 21,  49 => 20,  48 => 18,  44 => 16,);
+    }
+
+    public function getSourceContext(): Source
+    {
+        return new Source("{#
+/**
+ * @file
+ * Bootstrap's Theme override to display primary and secondary local tasks.
+ *
+ * Available variables:
+ * - primary: HTML list items representing primary tasks.
+ * - secondary: HTML list items representing primary tasks.
+ *
+ * Each item in these variables (primary and secondary) can be individually
+ * themed in menu-local-task.html.twig.
+ *
+ * @see template_preprocess_menu_local_tasks()
+ */
+#}
+{{ attach_library('bootstrap/tabs') }}
+{%
+  set classes = [
+    'nav',
+    primary ? 'primary',
+    secondary ? 'secondary',
+    nav_style ? nav_style : 'nav-tabs',
+  ]
+%}
+
+{% if primary %}
+  <h2 class=\"visually-hidden\">{{ 'Primary tabs'|t }}</h2>
+  <ul{{ attributes.addClass(classes) }}>{{ primary }}</ul>
+{% endif %}
+{% if secondary %}
+  <h2 class=\"visually-hidden\">{{ 'Secondary tabs'|t }}</h2>
+  <ul{{ attributes.addClass(classes) }}>{{ secondary }}</ul>
+{% endif %}
+", "themes/contrib/bootstrap/templates/navigation/menu-local-tasks.html.twig", "/Applications/XAMPP/xamppfiles/htdocs/hms/themes/contrib/bootstrap/templates/navigation/menu-local-tasks.html.twig");
+    }
+    
+    public function checkSecurity()
+    {
+        static $tags = ["set" => 18, "if" => 26];
+        static $filters = ["escape" => 16, "t" => 27];
+        static $functions = ["attach_library" => 16];
+
+        try {
+            $this->sandbox->checkSecurity(
+                ['set', 'if'],
+                ['escape', 't'],
+                ['attach_library'],
+                $this->source
+            );
+        } catch (SecurityError $e) {
+            $e->setSourceContext($this->source);
+
+            if ($e instanceof SecurityNotAllowedTagError && isset($tags[$e->getTagName()])) {
+                $e->setTemplateLine($tags[$e->getTagName()]);
+            } elseif ($e instanceof SecurityNotAllowedFilterError && isset($filters[$e->getFilterName()])) {
+                $e->setTemplateLine($filters[$e->getFilterName()]);
+            } elseif ($e instanceof SecurityNotAllowedFunctionError && isset($functions[$e->getFunctionName()])) {
+                $e->setTemplateLine($functions[$e->getFunctionName()]);
+            }
+
+            throw $e;
+        }
+
+    }
+}

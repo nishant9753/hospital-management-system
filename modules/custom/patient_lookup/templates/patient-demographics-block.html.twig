@@ -1,0 +1,55 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-body p-4 cs-iconsize">
+                <div class="row g-4 align-items-center">
+                    
+                    <div class="row">
+        <div class="col-4 ">
+          Name : <span class="highlight">{{ content.field_first_name |default('N/A') }} {{ content.field_last_name }}</span>
+        </div>
+        <div class="col-2">
+        Date of Birth : <span class="highlight"> {{ content.field_date_of_birth }} </span>
+        </div>
+        <div class="col-2 ">
+          Gender : <span class="highlight">{{ content.field_gender }}</span>
+        </div>
+        <div class="col-2 ">
+          Blood group : <span class="highlight">{{ content.field_blood_group }}</span>
+        </div>
+        <div class="col-2 "> Age : <span class="highlight"> 
+            {% if content.field_date_of_birth and content.field_date_of_birth != '-' %}
+            {% if content.computed_age %}
+                {{ content.computed_age }} Yrs
+            {% endif %}
+        {% else %}
+            -
+        {% endif %}
+        </span>
+        </div>
+      </div>
+
+      <div class="row ">
+        
+        <div class="col-4 ">
+          PID : <span class="highlight">{{ content.pid }}</span>
+        </div>
+        <div class="col-2">
+          Marital Status : <span class="highlight">{{ content.field_marital_status }}</span>
+        </div>
+        <div class="col-2 ">
+          Tel. : <span class="highlight">{{ content.field_phone_number }}</span>
+        </div>
+        <div class="col-4 ">
+          Address : <span class="highlight">{{ content.field_address }}</span>
+        </div>
+        
+        
+        
+        
+      </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

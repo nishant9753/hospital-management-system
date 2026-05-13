@@ -1,0 +1,44 @@
+{# 
+/**
+ * @file
+ * Default theme implementation for the dynamic AJAX patient summary card.
+ *
+ * Available variables:
+ * - name: The patient's full name.
+ * - gender: The patient's gender.
+ * - dob: The patient's date of birth.
+ * - blood: The patient's blood type.
+ * - phone: The patient's phone number.
+ */
+#}
+
+<div class="card patient-summary-card bg-white shadow-sm border-0 border-start border-primary border-4 mt-2">
+    <div class="card-body p-3">
+        <div class="row align-items-center g-2">
+            <div class="col-sm-4">
+                <div class="text-muted small text-uppercase" style="font-size: 0.7rem;">Patient Name</div>
+                <div class="fw-bold text-dark fs-6">
+                    <i class="bi bi-person me-1 text-muted"></i> {{ name|default('-') }}
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="text-muted small text-uppercase" style="font-size: 0.7rem;">DOB/Age</div>
+                <div class="fw-medium text-dark small">
+                    {{ dob|default('-') }}
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="text-muted small text-uppercase" style="font-size: 0.7rem;">Gender</div>
+                <div class="fw-bold text-dark small">
+                 {{ gender|default('-') }}
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="text-muted small text-uppercase" style="font-size: 0.7rem;">Contact</div>
+                <div class="fw-medium text-dark small">
+                    <i class="bi bi-telephone me-1 text-muted"></i> {{ phone|default('-') }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

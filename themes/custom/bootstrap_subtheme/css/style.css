@@ -1,0 +1,61 @@
+/**
+ * @file
+ * Subtheme specific CSS.
+ */
+
+.thead-dark {
+  background-color: rgba(0, 0, 0, 0.51);
+}
+
+/**
+ * Dashboard style
+ */
+
+#block-bootstrap-subtheme-page-title {
+  text-align: center;
+  text-transform: uppercase;
+  margin: 40px;
+  font-weight: 1000;
+  color: red;
+}
+.block-views-blockdoctor-weekly-availability-block-1 {
+  color: rgb(0, 34, 144);
+  background: lightblue;
+  padding: 25px;
+}
+
+/**
+* Sidebar first
+*/
+
+.sidebar .block {
+  min-height: -webkit-fill-available;
+}
+#block-bootstrap-subtheme-addcontent h2 {
+  margin: 0 0 0.5em;
+  border-bottom: 1px solid #d6d6d6;
+  font-size: 2.07em;
+  line-height: 3.2;
+  text-align: center;
+  font-weight: 500;
+}
+
+#block-bootstrap-subtheme-addcontent a {
+  color: #0071b3;
+  border: 1px solid gray;
+  padding: 3px;
+  line-height: 2em;
+  font-size: 20px;
+}
+
+.cs-iconsize i {
+  font-size: 3rem;
+}
+
+.cs-iconsize .field__label {
+  font-weight: 500;
+}
+
+.opd-sidebar {
+  max-width: 300px;
+}

@@ -1,0 +1,5 @@
+name: "Patient Lookup"
+type: module
+description: "Dynamically loads and displays patient data via AJAX on the OPD node creation form."
+package: Custom
+core_version_requirement: ^9 || ^10 || ^11
