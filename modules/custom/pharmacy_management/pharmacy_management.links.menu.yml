@@ -1,0 +1,27 @@
+pharmacy_management.admin:
+  title: 'Pharmacy Management'
+  description: 'Manage pharmacy drugs, billing, and alerts.'
+  route_name: pharmacy_management.dashboard
+  parent: system.admin
+  weight: 10
+
+pharmacy_management.drugs:
+  title: 'Drugs'
+  description: 'Manage drug inventory.'
+  route_name: entity.drug.collection
+  parent: pharmacy_management.admin
+  weight: 1
+
+pharmacy_management.billing:
+  title: 'Billing'
+  description: 'Manage billing records.'
+  route_name: entity.billing.collection
+  parent: pharmacy_management.admin
+  weight: 2
+
+pharmacy_management.alerts:
+  title: 'Alerts'
+  description: 'View stock and expiration alerts.'
+  route_name: pharmacy_management.alerts
+  parent: pharmacy_management.admin
+  weight: 3

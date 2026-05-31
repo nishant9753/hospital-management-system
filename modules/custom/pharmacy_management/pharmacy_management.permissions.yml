@@ -1,0 +1,49 @@
+administer pharmacy:
+  title: 'Administer pharmacy management'
+  description: 'Full access to all pharmacy management features.'
+  restrict access: true
+
+# Drug permissions
+create drug entities:
+  title: 'Create drug entities'
+  description: 'Create new drug records in the pharmacy system.'
+
+view drug entities:
+  title: 'View drug entities'
+  description: 'View drug records in the pharmacy system.'
+
+edit drug entities:
+  title: 'Edit drug entities'
+  description: 'Edit existing drug records.'
+
+delete drug entities:
+  title: 'Delete drug entities'
+  description: 'Delete drug records from the pharmacy system.'
+  restrict access: true
+
+# Billing permissions
+create billing entities:
+  title: 'Create billing entities'
+  description: 'Create new billing records.'
+
+view billing entities:
+  title: 'View billing entities'
+  description: 'View billing records.'
+
+edit billing entities:
+  title: 'Edit billing entities'
+  description: 'Edit existing billing records.'
+
+delete billing entities:
+  title: 'Delete billing entities'
+  description: 'Delete billing records.'
+  restrict access: true
+
+# Alert permissions
+view pharmacy alerts:
+  title: 'View pharmacy alerts'
+  description: 'View low stock and expiration alerts.'
+
+view pharmacy dashboard:
+  title: 'View pharmacy dashboard'
+  description: 'Access the pharmacy management dashboard.'

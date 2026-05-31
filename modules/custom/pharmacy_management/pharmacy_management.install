@@ -1,0 +1,435 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for pharmacy_management module.
+ */
+
+/**
+ * Implements hook_schema().
+ *
+ * Fresh installation schema.
+ */
+function pharmacy_management_schema(): array {
+
+  $schema = [];
+
+  // ===========================================================================
+  // DRUG TABLE
+  // ===========================================================================
+  $schema['drug'] = [
+    'description' => 'Stores medicine inventory.',
+
+    'fields' => [
+
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+
+      'uuid' => [
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+
+      'name' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+
+      'generic_name' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+        'default' => '',
+      ],
+
+      'batch_number' => [
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => FALSE,
+        'default' => '',
+      ],
+
+      'manufacturer' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+        'default' => '',
+      ],
+
+      'category' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => FALSE,
+        'default' => '',
+      ],
+
+      'dosage_form' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => FALSE,
+        'default' => '',
+      ],
+
+      'strength' => [
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => FALSE,
+        'default' => '',
+      ],
+
+      'quantity' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+
+      'low_stock_threshold' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 10,
+      ],
+
+      'unit_price' => [
+        'type' => 'numeric',
+        'precision' => 10,
+        'scale' => 2,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+
+      'manufacture_date' => [
+        'type' => 'varchar',
+        'length' => 20,
+        'not null' => FALSE,
+      ],
+
+      'expiry_date' => [
+        'type' => 'varchar',
+        'length' => 20,
+        'not null' => FALSE,
+      ],
+
+      'storage_conditions' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => FALSE,
+      ],
+
+      'prescription_required' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+
+      'description__value' => [
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+      ],
+
+      'description__format' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ],
+
+      'status' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 1,
+      ],
+
+      'uid' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+
+      'created' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+
+      'changed' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+    ],
+
+    'primary key' => ['id'],
+
+    'unique keys' => [
+      'uuid' => ['uuid'],
+    ],
+
+    'indexes' => [
+      'status' => ['status'],
+      'expiry_date' => ['expiry_date'],
+      'quantity' => ['quantity'],
+    ],
+  ];
+
+  // ===========================================================================
+  // BILLING TABLE
+  // ===========================================================================
+  $schema['billing'] = [
+    'description' => 'Invoice header table.',
+
+    'fields' => [
+
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+
+      'uuid' => [
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+
+      'invoice_number' => [
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => FALSE,
+        'default' => '',
+      ],
+
+      'patient_name' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+
+      'patient_contact' => [
+        'type' => 'varchar',
+        'length' => 20,
+        'not null' => FALSE,
+        'default' => '',
+      ],
+
+      'patient_age' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+      ],
+
+      'doctor_name' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+        'default' => '',
+      ],
+
+      'prescription_number' => [
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => FALSE,
+        'default' => '',
+      ],
+
+      // ONLY TOTALS HERE
+      // Drug rows moved to billing_items table.
+
+      'subtotal' => [
+        'type' => 'numeric',
+        'precision' => 10,
+        'scale' => 2,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+
+      'discount' => [
+        'type' => 'numeric',
+        'precision' => 10,
+        'scale' => 2,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+
+      'tax_rate' => [
+        'type' => 'numeric',
+        'precision' => 5,
+        'scale' => 2,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+
+      'tax_amount' => [
+        'type' => 'numeric',
+        'precision' => 10,
+        'scale' => 2,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+
+      'total_amount' => [
+        'type' => 'numeric',
+        'precision' => 10,
+        'scale' => 2,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+
+      'payment_method' => [
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => FALSE,
+      ],
+
+      'payment_status' => [
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => 'paid',
+      ],
+
+      'billing_date' => [
+        'type' => 'varchar',
+        'length' => 20,
+        'not null' => FALSE,
+      ],
+
+      'notes__value' => [
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+      ],
+
+      'notes__format' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ],
+
+      'status' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 1,
+      ],
+
+      'created' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+
+      'changed' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+    ],
+
+    'primary key' => ['id'],
+
+    'unique keys' => [
+      'uuid' => ['uuid'],
+      'invoice_number' => ['invoice_number'],
+    ],
+
+    'indexes' => [
+      'status' => ['status'],
+      'payment_status' => ['payment_status'],
+      'billing_date' => ['billing_date'],
+    ],
+  ];
+
+  // ===========================================================================
+  // BILLING ITEMS TABLE
+  // ===========================================================================
+  $schema['billing_items'] = [
+    'description' => 'Stores multiple drugs per invoice.',
+
+    'fields' => [
+
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+
+      'billing_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+
+      'drug_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+
+      'quantity_sold' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 1,
+      ],
+
+      'unit_price' => [
+        'type' => 'numeric',
+        'precision' => 10,
+        'scale' => 2,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+
+      'line_total' => [
+        'type' => 'numeric',
+        'precision' => 10,
+        'scale' => 2,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+    ],
+
+    'primary key' => ['id'],
+
+    'indexes' => [
+      'billing_id' => ['billing_id'],
+      'drug_id' => ['drug_id'],
+    ],
+  ];
+
+  return $schema;
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function pharmacy_management_uninstall(): void {
+
+  $schema = \Drupal::database()->schema();
+
+  if ($schema->tableExists('billing_items')) {
+    $schema->dropTable('billing_items');
+  }
+
+  if ($schema->tableExists('billing')) {
+    $schema->dropTable('billing');
+  }
+
+  if ($schema->tableExists('drug')) {
+    $schema->dropTable('drug');
+  }
+}

@@ -1,0 +1,82 @@
+{#
+/**
+ * @file
+ * billing-entity_html.twig
+ * Template for Billing entity canonical view.
+ *
+ * Variables:
+ *   elements — render array including #billing entity.
+ */
+#}
+{% set billing = elements['#billing'] %}
+{% set line_items = billing.getLineItems() %}
+
+<div class="billing-entity-view">
+
+  <div class="invoice-header">
+    <h2 class="invoice-number">Invoice: {{ billing.get('invoice_number').value }}</h2>
+    <div class="invoice-header-actions">
+      <span class="payment-status-badge status-{{ billing.get('payment_status').value }}">
+        {{ billing.get('payment_status').value|capitalize }}
+      </span>
+      <a href="{{ path('entity.billing.print', {billing: billing.id()}) }}"
+         target="_blank"
+         class="button button--primary button--small print-receipt-btn">
+        🖨 Print Receipt
+      </a>
+    </div>
+  </div>
+
+  {# Drug line items table #}
+  {% if line_items is not empty %}
+  <div class="billing-line-items">
+    <h3>{{ 'Drug Items'|t }}</h3>
+    <table class="billing-items-table">
+      <thead>
+        <tr>
+          <th>{{ 'Drug'|t }}</th>
+          <th>{{ 'Qty'|t }}</th>
+          <th>{{ 'Unit Price'|t }}</th>
+          <th>{{ 'Line Total'|t }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in line_items %}
+        <tr>
+          <td>{{ item.drug_label }}</td>
+          <td>{{ item.quantity_sold }}</td>
+          <td>₹{{ item.unit_price|number_format(2) }}</td>
+          <td>₹{{ item.line_total|number_format(2) }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3"><strong>{{ 'Subtotal'|t }}</strong></td>
+          <td>₹{{ billing.get('subtotal').value|number_format(2) }}</td>
+        </tr>
+        {% if billing.get('discount').value > 0 %}
+        <tr>
+          <td colspan="3">{{ 'Discount'|t }}</td>
+          <td>− ₹{{ billing.get('discount').value|number_format(2) }}</td>
+        </tr>
+        {% endif %}
+        {% if billing.get('tax_rate').value > 0 %}
+        <tr>
+          <td colspan="3">{{ 'Tax (%rate%)'|t({'%rate%': billing.get('tax_rate').value ~ '%'}) }}</td>
+          <td>+ ₹{{ billing.get('tax_amount').value|number_format(2) }}</td>
+        </tr>
+        {% endif %}
+        <tr class="total-row">
+          <td colspan="3"><strong>{{ 'TOTAL'|t }}</strong></td>
+          <td><strong>₹{{ billing.get('total_amount').value|number_format(2) }}</strong></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+  {% endif %}
+
+  {# Remaining entity fields (patient info, payment, notes, etc.) #}
+  {{ elements|without('#billing', '#view_mode', '#cache', '#attached') }}
+
+</div>

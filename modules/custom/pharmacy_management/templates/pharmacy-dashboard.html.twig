@@ -1,0 +1,153 @@
+{#
+/**
+ * @file
+ * Template for pharmacy dashboard.
+ *
+ * Available variables:
+ * - stats: Array of statistics.
+ * - low_stock_drugs: Array of low stock drug entities.
+ * - expiring_drugs: Array of expiring drug entities.
+ * - expired_drugs: Array of expired drug entities.
+ * - recent_billings: Array of recent billing entities.
+ */
+#}
+<div class="pharmacy-dashboard">
+
+  {# Stats Cards #}
+  <div class="dashboard-stats">
+    <div class="stat-card stat-card--primary">
+      <div class="stat-icon">💊</div>
+      <div class="stat-value">{{ stats.total_drugs }}</div>
+      <div class="stat-label">Total Drugs</div>
+    </div>
+    <div class="stat-card stat-card--success">
+      <div class="stat-icon">💵</div>
+      <div class="stat-value">₹{{ stats.total_revenue }}</div>
+      <div class="stat-label">Total Revenue</div>
+    </div>
+    <div class="stat-card stat-card--info">
+      <div class="stat-icon">🏦</div>
+      <div class="stat-value">₹{{ stats.stock_value }}</div>
+      <div class="stat-label">Stock Value</div>
+    </div>
+    <div class="stat-card stat-card--billing">
+      <div class="stat-icon">🧾</div>
+      <div class="stat-value">{{ stats.total_billings }}</div>
+      <div class="stat-label">Total Billings</div>
+    </div>
+    {% if stats.expired_count > 0 %}
+    <div class="stat-card stat-card--danger">
+      <div class="stat-icon">⛔</div>
+      <div class="stat-value">{{ stats.expired_count }}</div>
+      <div class="stat-label">Expired Drugs</div>
+    </div>
+    {% endif %}
+    {% if stats.expiring_count > 0 %}
+    <div class="stat-card stat-card--warning">
+      <div class="stat-icon">⏰</div>
+      <div class="stat-value">{{ stats.expiring_count }}</div>
+      <div class="stat-label">Expiring Soon</div>
+    </div>
+    {% endif %}
+    {% if stats.low_stock_count > 0 %}
+    <div class="stat-card stat-card--stock">
+      <div class="stat-icon">📦</div>
+      <div class="stat-value">{{ stats.low_stock_count }}</div>
+      <div class="stat-label">Low Stock</div>
+    </div>
+    {% endif %}
+  </div>
+
+  {# Alert Banners #}
+  {% if expired_drugs is not empty %}
+  <div class="pharmacy-alert pharmacy-alert--danger dashboard-alert">
+    <strong>⛔ {{ expired_drugs|length }} drug(s) have EXPIRED</strong> — Immediate action required.
+    <a href="/admin/pharmacy/alerts" class="alert-link">View All Alerts →</a>
+  </div>
+  {% endif %}
+
+  {% if expiring_drugs is not empty %}
+  <div class="pharmacy-alert pharmacy-alert--warning dashboard-alert">
+    <strong>⚠️ {{ expiring_drugs|length }} drug(s) expiring within 30 days</strong>
+    <a href="/admin/pharmacy/alerts" class="alert-link">View All Alerts →</a>
+  </div>
+  {% endif %}
+
+  {% if low_stock_drugs is not empty %}
+  <div class="pharmacy-alert pharmacy-alert--info dashboard-alert">
+    <strong>📦 {{ low_stock_drugs|length }} drug(s) are low on stock</strong>
+    <a href="/admin/pharmacy/alerts" class="alert-link">View All Alerts →</a>
+  </div>
+  {% endif %}
+
+  {# Quick Actions #}
+  <div class="dashboard-quick-actions">
+    <h2 class="section-title">Quick Actions</h2>
+    <div class="quick-action-buttons">
+      <a href="/admin/pharmacy/drugs/add" class="quick-btn quick-btn--primary">+ Add Drug</a>
+      <a href="/admin/pharmacy/billing/add" class="quick-btn quick-btn--success">+ New Billing</a>
+      <a href="/admin/pharmacy/drugs" class="quick-btn quick-btn--secondary">View Drugs</a>
+      <a href="/admin/pharmacy/billing" class="quick-btn quick-btn--secondary">View Billing</a>
+      <a href="/admin/pharmacy/alerts" class="quick-btn quick-btn--warning">View Alerts</a>
+    </div>
+  </div>
+
+  <div class="dashboard-columns">
+
+    {# Low Stock Drugs #}
+    {% if low_stock_drugs is not empty %}
+    <div class="dashboard-panel">
+      <h3 class="panel-title panel-title--warning">📦 Low Stock Drugs</h3>
+      <table class="pharmacy-table">
+        <thead>
+          <tr>
+            <th>Drug</th>
+            <th>Stock</th>
+            <th>Threshold</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for drug in low_stock_drugs %}
+          <tr class="pharmacy-row--low-stock">
+            <td><a href="/admin/pharmacy/drugs/{{ drug.id() }}">{{ drug.label() }}</a></td>
+            <td><strong>{{ drug.get('quantity').value }}</strong></td>
+            <td>{{ drug.get('low_stock_threshold').value }}</td>
+            <td><a href="/admin/pharmacy/drugs/{{ drug.id() }}/edit" class="table-action">Restock</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+
+    {# Recent Billings #}
+    {% if recent_billings is not empty %}
+    <div class="dashboard-panel">
+      <h3 class="panel-title panel-title--primary">🧾 Recent Billings</h3>
+      <table class="pharmacy-table">
+        <thead>
+          <tr>
+            <th>Invoice</th>
+            <th>Patient</th>
+            <th>Total</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for billing in recent_billings %}
+          <tr>
+            <td><a href="/admin/pharmacy/billing/{{ billing.id() }}">{{ billing.get('invoice_number').value }}</a></td>
+            <td>{{ billing.get('patient_name').value }}</td>
+            <td>₹{{ billing.get('total_amount').value|number_format(2) }}</td>
+            <td><span class="status-badge status-{{ billing.get('payment_status').value }}">{{ billing.get('payment_status').value|capitalize }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <a href="/admin/pharmacy/billing" class="view-all-link">View All Billing Records →</a>
+    </div>
+    {% endif %}
+
+  </div>
+</div>

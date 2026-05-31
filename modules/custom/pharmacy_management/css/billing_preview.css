@@ -1,0 +1,30 @@
+/* Billing total preview widget */
+.billing-total-preview {
+  background: #F0F9F4;
+  border: 1px solid #A9DFBF;
+  border-radius: var(--pm-radius, 6px);
+  padding: 14px 16px;
+  margin: 12px 0;
+  font-family: var(--pm-font, sans-serif);
+}
+
+.total-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #2C3E50;
+}
+
+.total-row--total {
+  font-size: 16px;
+  font-weight: 700;
+  padding-top: 8px;
+  border-top: 2px solid #A9DFBF;
+  color: #1B7A4E;
+}
