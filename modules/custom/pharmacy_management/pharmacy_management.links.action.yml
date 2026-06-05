@@ -1,0 +1,11 @@
+entity.drug.add_form:
+  route_name: entity.drug.add_form
+  title: 'Add Drug'
+  appears_on:
+    - entity.drug.collection
+
+entity.billing.add_form:
+  route_name: entity.billing.add_form
+  title: 'Add Billing'
+  appears_on:
+    - entity.billing.collection

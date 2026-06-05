@@ -1,0 +1,113 @@
+<?php
+
+/**
+ * @file
+ * Pharmacy Management module hooks and functions.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_help().
+ */
+function pharmacy_management_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.pharmacy_management':
+      return '<p>' . t('Manages drugs inventory and billing with alerts for low stock and expiration.') . '</p>';
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function pharmacy_management_theme() {
+  return [
+    'drug_entity' => [
+      'render element' => 'elements',
+      'template' => 'drug-entity',
+    ],
+    'billing_entity' => [
+      'render element' => 'elements',
+      'template' => 'billing-entity',
+    ],
+    'billing_receipt' => [
+      'variables' => [
+        'billing'    => NULL,
+        'line_items' => [],
+    ],
+    ],
+    'pharmacy_dashboard' => [
+      'variables' => [
+        'low_stock_drugs' => [],
+        'expiring_drugs' => [],
+        'recent_billings' => [],
+        'stats' => [],
+      ],
+      'template' => 'pharmacy-dashboard',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_page_attachments().
+ */
+function pharmacy_management_page_attachments(array &$attachments) {
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  if (strpos($route_name, 'pharmacy_management') !== FALSE ||
+      strpos($route_name, 'entity.drug') !== FALSE ||
+      strpos($route_name, 'entity.billing') !== FALSE) {
+    $attachments['#attached']['library'][] = 'pharmacy_management/pharmacy_styles';
+  }
+}
+
+/**
+ * Implements hook_cron().
+ * Checks for low stock and expiring drugs.
+ */
+function pharmacy_management_cron() {
+  _pharmacy_management_check_alerts();
+}
+
+/**
+ * Check and log alerts for low stock and expiring drugs.
+ */
+function _pharmacy_management_check_alerts() {
+  $logger = \Drupal::logger('pharmacy_management');
+  $drug_storage = \Drupal::entityTypeManager()->getStorage('drug');
+
+  // Check low stock.
+  $low_stock_ids = $drug_storage->getQuery()
+    ->condition('status', 1)
+    ->accessCheck(FALSE)
+    ->execute();
+
+  $low_stock_count = 0;
+  $expiring_count = 0;
+
+  if (!empty($low_stock_ids)) {
+    $drugs = $drug_storage->loadMultiple($low_stock_ids);
+    $expiry_threshold = strtotime('+30 days');
+
+    foreach ($drugs as $drug) {
+      $quantity = (int) $drug->get('quantity')->value;
+      $low_stock_threshold = (int) $drug->get('low_stock_threshold')->value;
+
+      if ($quantity <= $low_stock_threshold) {
+        $low_stock_count++;
+      }
+
+      $expiry_date = $drug->get('expiry_date')->value;
+      if ($expiry_date && strtotime($expiry_date) <= $expiry_threshold) {
+        $expiring_count++;
+      }
+    }
+  }
+
+  if ($low_stock_count > 0) {
+    $logger->warning('@count drug(s) are low on stock.', ['@count' => $low_stock_count]);
+  }
+  if ($expiring_count > 0) {
+    $logger->warning('@count drug(s) are expiring within 30 days.', ['@count' => $expiring_count]);
+  }
+}

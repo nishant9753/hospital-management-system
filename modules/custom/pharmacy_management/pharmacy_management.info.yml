@@ -1,0 +1,9 @@
+name: Pharmacy Management
+type: module
+description: 'Manages pharmacy drugs and billing with stock/expiration alerts and permission-based access.'
+core_version_requirement: ^10
+package: Custom
+dependencies:
+  - drupal:user
+  - drupal:system
+  - drupal:views

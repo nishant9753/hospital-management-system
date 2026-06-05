@@ -1,0 +1,106 @@
+pharmacy_management.dashboard:
+  path: "/admin/pharmacy"
+  defaults:
+    _controller: '\Drupal\pharmacy_management\Controller\PharmacyDashboardController::dashboard'
+    _title: "Pharmacy Dashboard"
+  requirements:
+    _permission: "view pharmacy dashboard|administer pharmacy"
+
+pharmacy_management.alerts:
+  path: "/admin/pharmacy/alerts"
+  defaults:
+    _controller: '\Drupal\pharmacy_management\Controller\PharmacyAlertsController::alerts'
+    _title: "Pharmacy Alerts"
+  requirements:
+    _permission: "view pharmacy alerts|administer pharmacy"
+
+# Drug entity routes
+entity.drug.collection:
+  path: "/admin/pharmacy/drugs"
+  defaults:
+    _controller: '\Drupal\pharmacy_management\Controller\DrugListController::listing'
+    _title: "Drug Inventory"
+  requirements:
+    _permission: "view drug entities+administer pharmacy"
+
+entity.drug.add_form:
+  path: "/admin/pharmacy/drugs/add"
+  defaults:
+    _entity_form: "drug.add"
+    _title: "Add Drug"
+  requirements:
+    _permission: "create drug entities+administer pharmacy"
+
+entity.drug.canonical:
+  path: "/admin/pharmacy/drugs/{drug}"
+  defaults:
+    _entity_view: "drug.full"
+    _title_callback: '\Drupal\pharmacy_management\Controller\DrugViewController::title'
+  requirements:
+    _entity_access: "drug.view"
+
+entity.drug.edit_form:
+  path: "/admin/pharmacy/drugs/{drug}/edit"
+  defaults:
+    _entity_form: "drug.edit"
+    _title: "Edit Drug"
+  requirements:
+    _entity_access: "drug.edit"
+
+entity.drug.delete_form:
+  path: "/admin/pharmacy/drugs/{drug}/delete"
+  defaults:
+    _entity_form: "drug.delete"
+    _title: "Delete Drug"
+  requirements:
+    _entity_access: "drug.delete"
+
+# Billing entity routes
+entity.billing.collection:
+  path: "/admin/pharmacy/billing"
+  defaults:
+    _controller: '\Drupal\pharmacy_management\Controller\BillingListController::listing'
+    _title: "Billing Records"
+  requirements:
+    _permission: "view billing entities+administer pharmacy"
+
+entity.billing.add_form:
+  path: "/admin/pharmacy/billing/add"
+  defaults:
+    _entity_form: "billing.add"
+    _title: "Add Billing"
+  requirements:
+    _permission: "create billing entities+administer pharmacy"
+
+entity.billing.canonical:
+  path: "/admin/pharmacy/billing/{billing}"
+  defaults:
+    _entity_view: "billing.full"
+    _title_callback: '\Drupal\pharmacy_management\Controller\BillingViewController::title'
+  requirements:
+    _entity_access: "billing.view"
+
+entity.billing.edit_form:
+  path: "/admin/pharmacy/billing/{billing}/edit"
+  defaults:
+    _entity_form: "billing.edit"
+    _title: "Edit Billing"
+  requirements:
+    _entity_access: "billing.edit"
+
+entity.billing.delete_form:
+  path: "/admin/pharmacy/billing/{billing}/delete"
+  defaults:
+    _entity_form: "billing.delete"
+    _title: "Delete Billing"
+  requirements:
+    _entity_access: "billing.delete"
+
+entity.billing.print:
+  path: "/admin/pharmacy/billing/{billing}/print"
+  defaults:
+    _controller: '\Drupal\pharmacy_management\Controller\BillingPrintController::receipt'
+    _title_callback: '\Drupal\pharmacy_management\Controller\BillingPrintController::title'
+  requirements:
+    _permission: "administer pharmacy"
+    billing: \d+

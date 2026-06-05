@@ -1,0 +1,17 @@
+{#
+/**
+ * @file
+ * Template for Drug entity view.
+ */
+#}
+<div class="drug-entity-view">
+  {% if elements['#drug'].isExpired() %}
+    <div class="pharmacy-alert pharmacy-alert--danger">⛔ This drug has EXPIRED</div>
+  {% elseif elements['#drug'].isExpiringSoon() %}
+    <div class="pharmacy-alert pharmacy-alert--warning">⏰ This drug expires within 30 days</div>
+  {% endif %}
+  {% if elements['#drug'].isLowStock() %}
+    <div class="pharmacy-alert pharmacy-alert--info">📦 Low Stock: Only {{ elements['#drug'].get('quantity').value }} units remaining</div>
+  {% endif %}
+  {{ elements|without('#drug', '#view_mode', '#cache', '#attached') }}
+</div>

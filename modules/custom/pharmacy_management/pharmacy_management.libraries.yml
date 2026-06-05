@@ -1,0 +1,16 @@
+pharmacy_styles:
+  version: '1.0'
+  css:
+    theme:
+      css/pharmacy_management.css: {}
+  js:
+    js/pharmacy_management.js: {}
+  dependencies:
+    - core/drupal
+    - core/jquery
+
+billing_preview:
+  version: '1.0'
+  css:
+    theme:
+      css/billing_preview.css: {}

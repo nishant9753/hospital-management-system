@@ -1,0 +1,192 @@
+{#
+/**
+ * @file
+ * billing-receipt.html.twig
+ *
+ * Theme hook: billing_receipt
+ * Variables:
+ *   billing    — Billing entity
+ *   line_items — array of line item arrays from Billing::getLineItems()
+ */
+#}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Receipt — {{ billing.get('invoice_number').value }}</title>
+  {{ page['#attached'] }}
+  <style>
+    /* Inline print styles — no dependency on external CSS for print safety */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; font-size: 13px; color: #222; background: #fff; }
+    .receipt-wrapper { max-width: 720px; margin: 30px auto; padding: 30px; border: 1px solid #ddd; }
+    .receipt-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #333; padding-bottom: 16px; margin-bottom: 20px; }
+    .pharmacy-name { font-size: 22px; font-weight: bold; color: #1a5276; }
+    .pharmacy-sub  { font-size: 11px; color: #666; margin-top: 4px; }
+    .invoice-meta  { text-align: right; }
+    .invoice-meta .inv-number { font-size: 18px; font-weight: bold; }
+    .invoice-meta .inv-date   { font-size: 11px; color: #555; margin-top: 4px; }
+    .status-badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
+    .status-paid     { background: #d4efdf; color: #1e8449; }
+    .status-pending  { background: #fef9e7; color: #b7950b; }
+    .status-partial  { background: #ebf5fb; color: #1a5276; }
+    .status-refunded { background: #fdedec; color: #922b21; }
+
+    .patient-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 30px; margin-bottom: 20px; }
+    .patient-grid .label { font-size: 10px; text-transform: uppercase; color: #888; }
+    .patient-grid .value { font-weight: 600; margin-top: 1px; }
+
+    table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+    thead tr { background: #1a5276; color: #fff; }
+    thead th { padding: 8px 10px; text-align: left; font-size: 12px; }
+    tbody tr:nth-child(even) { background: #f4f6f7; }
+    tbody td { padding: 7px 10px; border-bottom: 1px solid #eee; }
+
+    .totals-table { width: 260px; margin-left: auto; margin-bottom: 20px; }
+    .totals-table td { padding: 5px 8px; }
+    .totals-table .total-row td { font-size: 15px; font-weight: bold; border-top: 2px solid #333; padding-top: 8px; }
+
+    .payment-info { background: #f4f6f7; padding: 12px 16px; border-radius: 6px; margin-bottom: 20px; font-size: 12px; }
+    .notes-box    { border: 1px dashed #bbb; padding: 10px 14px; border-radius: 4px; font-size: 12px; color: #555; margin-bottom: 20px; }
+
+    .receipt-footer { text-align: center; font-size: 11px; color: #999; border-top: 1px solid #eee; padding-top: 14px; }
+
+    .print-btn { display: block; width: 160px; margin: 20px auto; padding: 10px; text-align: center; background: #1a5276; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+
+    @media print {
+      .print-btn { display: none !important; }
+      body { margin: 0; }
+      .receipt-wrapper { border: none; margin: 0; padding: 10px; }
+    }
+  </style>
+</head>
+<body>
+<div class="receipt-wrapper">
+
+  {# Header #}
+  <div class="receipt-header">
+    <div>
+      <div class="pharmacy-name">🏥 Pharmacy Management</div>
+      <div class="pharmacy-sub">Medical Store Receipt</div>
+    </div>
+    <div class="invoice-meta">
+      <div class="inv-number">{{ billing.get('invoice_number').value }}</div>
+      <div class="inv-date">
+        {% if billing.get('billing_date').value %}
+          {{ billing.get('billing_date').value|date('d M Y, h:i A') }}
+        {% else %}
+          {{ 'now'|date('d M Y, h:i A') }}
+        {% endif %}
+      </div>
+      <div style="margin-top:6px">
+        <span class="status-badge status-{{ billing.get('payment_status').value }}">
+          {{ billing.get('payment_status').value|capitalize }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  {# Patient info #}
+  <div class="patient-grid">
+    <div>
+      <div class="label">Patient Name</div>
+      <div class="value">{{ billing.get('patient_name').value ?: '—' }}</div>
+    </div>
+    <div>
+      <div class="label">Contact</div>
+      <div class="value">{{ billing.get('patient_contact').value ?: '—' }}</div>
+    </div>
+    {% if billing.get('patient_age').value %}
+    <div>
+      <div class="label">Age</div>
+      <div class="value">{{ billing.get('patient_age').value }} yrs</div>
+    </div>
+    {% endif %}
+    {% if billing.get('doctor_name').value %}
+    <div>
+      <div class="label">Doctor</div>
+      <div class="value">{{ billing.get('doctor_name').value }}</div>
+    </div>
+    {% endif %}
+    {% if billing.get('prescription_number').value %}
+    <div>
+      <div class="label">Prescription #</div>
+      <div class="value">{{ billing.get('prescription_number').value }}</div>
+    </div>
+    {% endif %}
+  </div>
+
+  {# Line items table #}
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Drug</th>
+        <th style="text-align:right">Qty</th>
+        <th style="text-align:right">Unit Price</th>
+        <th style="text-align:right">Line Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in line_items %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ item.drug_label }}</td>
+        <td style="text-align:right">{{ item.quantity_sold }}</td>
+        <td style="text-align:right">₹{{ item.unit_price|number_format(2) }}</td>
+        <td style="text-align:right">₹{{ item.line_total|number_format(2) }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5" style="text-align:center;color:#999">No items</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {# Totals #}
+  <table class="totals-table">
+    <tr>
+      <td>Subtotal</td>
+      <td style="text-align:right">₹{{ billing.get('subtotal').value|number_format(2) }}</td>
+    </tr>
+    {% if billing.get('discount').value > 0 %}
+    <tr>
+      <td>Discount</td>
+      <td style="text-align:right">− ₹{{ billing.get('discount').value|number_format(2) }}</td>
+    </tr>
+    {% endif %}
+    {% if billing.get('tax_rate').value > 0 %}
+    <tr>
+      <td>Tax ({{ billing.get('tax_rate').value }}%)</td>
+      <td style="text-align:right">+ ₹{{ billing.get('tax_amount').value|number_format(2) }}</td>
+    </tr>
+    {% endif %}
+    <tr class="total-row">
+      <td>TOTAL</td>
+      <td style="text-align:right">₹{{ billing.get('total_amount').value|number_format(2) }}</td>
+    </tr>
+  </table>
+
+  {# Payment info #}
+  <div class="payment-info">
+    <strong>Payment Method:</strong>
+    {% set pm_labels = {'cash':'Cash','card':'Credit/Debit Card','insurance':'Insurance','online':'Online Payment','cheque':'Cheque'} %}
+    {{ pm_labels[billing.get('payment_method').value] ?? billing.get('payment_method').value ?? '—' }}
+  </div>
+
+  {# Notes #}
+  {% if billing.get('notes').value %}
+  <div class="notes-box"><strong>Notes:</strong> {{ billing.get('notes').value }}</div>
+  {% endif %}
+
+  <div class="receipt-footer">
+    Thank you for choosing our pharmacy. Get well soon! 💊<br>
+    Generated on {{ 'now'|date('d M Y, h:i A') }}
+  </div>
+
+</div>
+
+<button class="print-btn" onclick="window.print()">🖨 Print Receipt</button>
+
+</body>
+</html>
